@@ -117,7 +117,7 @@ namespace UltraStrafe
             }
             else
             {
-                // default ultrakill air movement
+                // default ultrakill air movement (cleaned up and commented for my better understanding)
                 float slowModeNum = __instance.slowMode ? 1.25f : 2.75f;
                 // movementDirection is raw player input, normalised to 1
                 movementDirection2Ref(__instance) = new Vector3(
@@ -129,7 +129,7 @@ namespace UltraStrafe
 
                 airDirectionRef(__instance).y = 0f; // the force to be applied to the movement vector
 
-                if (Mathf.Abs(movementDirection2Ref(__instance).x) > Mathf.Abs(__instance.rb.velocity.x) && movementDirection2Ref(__instance).x != 0f)
+                if (__instance.rb.velocity.x * movementDirection2Ref(__instance).x < Mathf.Pow(movementDirection2Ref(__instance).x,2))
                 {
                     airDirectionRef(__instance).x = movementDirection2Ref(__instance).x;
                 }
@@ -138,7 +138,7 @@ namespace UltraStrafe
                     airDirectionRef(__instance).x = 0f;
                 }
 
-                if (Mathf.Abs(movementDirection2Ref(__instance).z) > Mathf.Abs(__instance.rb.velocity.z) && movementDirection2Ref(__instance).z != 0f)
+                if (__instance.rb.velocity.z * movementDirection2Ref(__instance).z < Mathf.Pow(movementDirection2Ref(__instance).z, 2))
                 {
                     airDirectionRef(__instance).z = movementDirection2Ref(__instance).z;
                 }
