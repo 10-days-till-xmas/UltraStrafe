@@ -25,7 +25,7 @@ public class Plugin : BaseUnityPlugin
         sv_accelerate = Config.Bind(
             "Cvars",
             "sv_accelerate", 
-            80f, // TODO: try finding the best value for this
+            70f, // TODO: try finding the best value for this
             "The (base) acceleration value for the strafe movement, affecting the turn radius");
         sv_maxspeed = Config.Bind(
             "Cvars",
@@ -40,8 +40,8 @@ public class Plugin : BaseUnityPlugin
         sv_acceltweak = Config.Bind(
             "Cvars",
             "sv_acceltweak",
-            false,
-            "Enable this to make the acceleration value scaled based off of an equation");
+            true,
+            "Enable this to make sv_accelerate increase based on your speed");
 
         DoPatching();
     }
