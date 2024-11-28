@@ -16,7 +16,7 @@ public class Plugin : BaseUnityPlugin
     internal static ConfigEntry<Byte> sv_maxfrictionlessframes;
     internal static ConfigEntry<bool> sv_acceltweak;
     internal static ConfigEntry<float> sv_switchspeed;
-
+    internal static ConfigEntry<bool> sv_autobhop;
 
     internal void Awake()
     {
@@ -49,7 +49,11 @@ public class Plugin : BaseUnityPlugin
             "sv_switchspeed",
             16.50f,
             "The speed at which it switches from ultrakill physics (low speeds) to quake (high speeds). I don't recommend changing unless you know what you're doing.");
-
+        sv_autobhop = Config.Bind(
+            "Cvars",
+            "sv_autobhop",
+            false,
+            "Enable this to make the game automatically jump while holding jump, without any need to release the jump key");
 
         DoPatching();
     }
