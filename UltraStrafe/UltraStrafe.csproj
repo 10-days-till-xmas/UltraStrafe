@@ -30,10 +30,7 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\ultrakill+bepinex\ULTRAKILL_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\ultrakill+bepinex\ULTRAKILL_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>..\..\ultrakill+bepinex\ULTRAKILL_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\UltraStrafe\ultrakill+bepinex\ULTRAKILL_Data\Managed\UnityEngine.dll</HintPath>

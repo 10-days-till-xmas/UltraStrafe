@@ -4,9 +4,6 @@ using BepInEx.Logging;
 using HarmonyLib;
 using HarmonyLib.Tools;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using UnityEngine;
 
 namespace UltraStrafe;
 

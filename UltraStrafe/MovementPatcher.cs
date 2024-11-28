@@ -1,8 +1,4 @@
 ﻿using HarmonyLib;
-using System;
-using System.Reflection;
-using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace UltraStrafe
 {

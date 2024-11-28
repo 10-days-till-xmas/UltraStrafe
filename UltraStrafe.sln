@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UltraStrafe", "UltraStrafe.csproj", "{0617B36E-6518-4076-8C53-1FCEBEE5F17C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UltraStrafe", "UltraStrafe\UltraStrafe.csproj", "{3AAF59CD-42CB-4B87-82AB-B64D74B4B671}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0617B36E-6518-4076-8C53-1FCEBEE5F17C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0617B36E-6518-4076-8C53-1FCEBEE5F17C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0617B36E-6518-4076-8C53-1FCEBEE5F17C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0617B36E-6518-4076-8C53-1FCEBEE5F17C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AAF59CD-42CB-4B87-82AB-B64D74B4B671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AAF59CD-42CB-4B87-82AB-B64D74B4B671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AAF59CD-42CB-4B87-82AB-B64D74B4B671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AAF59CD-42CB-4B87-82AB-B64D74B4B671}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {18B62162-7F2E-4848-8DFF-9E8DEE8DB80A}
+		SolutionGuid = {DBE37626-B142-422E-94A4-E93FAC7884F5}
 	EndGlobalSection
 EndGlobal
