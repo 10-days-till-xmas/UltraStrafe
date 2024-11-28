@@ -85,7 +85,7 @@ namespace UltraStrafe
 
             float speed = new Vector2(__instance.rb.velocity.x , __instance.rb.velocity.z).magnitude;
             
-            if (speed > 16.50f)
+            if (speed > Plugin.sv_switchspeed.Value)
             {
                 // quake air move
                 Vector3 wishvel = new(

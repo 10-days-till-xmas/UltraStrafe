@@ -15,6 +15,8 @@ public class Plugin : BaseUnityPlugin
     internal static ConfigEntry<float> sv_maxspeed;
     internal static ConfigEntry<Byte> sv_maxfrictionlessframes;
     internal static ConfigEntry<bool> sv_acceltweak;
+    internal static ConfigEntry<float> sv_switchspeed;
+
 
     internal void Awake()
     {
@@ -36,12 +38,18 @@ public class Plugin : BaseUnityPlugin
             "Cvars",
             "sv_maxfrictionlessframes",
             2,
-            "The maximum number of frames that friction is disabled for when landing. A value from 2-4 is recommended depending on your specs with lower framerates having a higher value");
+            "The maximum number of frames that friction is disabled for when landing. A value from 2-4 is recommended depending on your specs with lower framerates having a higher value.");
         sv_acceltweak = Config.Bind(
             "Cvars",
             "sv_acceltweak",
             true,
             "Enable this to make sv_accelerate increase based on your speed");
+        sv_switchspeed = Config.Bind(
+            "Cvars",
+            "sv_switchspeed",
+            16.50f,
+            "The speed at which it switches from ultrakill physics (low speeds) to quake (high speeds). I don't recommend changing unless you know what you're doing.");
+
 
         DoPatching();
     }
