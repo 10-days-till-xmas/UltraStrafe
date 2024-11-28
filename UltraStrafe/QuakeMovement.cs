@@ -75,7 +75,7 @@ namespace UltraStrafe
         private float NewAcceleration(float speed)
         {
             // TODO: try changing the parameters of this function to get the best result
-            float factor = Mathf.Clamp(Mathf.Log(speed-8.5f, 2f) - 1f, 1f, 10f);
+            float factor = Mathf.Clamp(Mathf.Log(speed-8.5f, 2f) - 2f, 1f, 10f);
             return sv_accelerate * factor;
         }
 
