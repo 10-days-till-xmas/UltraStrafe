@@ -24,10 +24,11 @@ namespace UltraStrafe
         private static readonly AccessTools.FieldRef<NewMovement, float> frictionRef =
             AccessTools.FieldRefAccess<NewMovement, float>("friction");
 
-        public static float sv_accelerate = Plugin.sv_accelerate.Value;
-        public static float sv_maxspeed = Plugin.sv_maxspeed.Value; 
-        public static int sv_maxfrictionlessframes = Plugin.sv_maxfrictionlessframes.Value;
-
+        public static float sv_accelerate = ConfigManager.sv_accelerate.Value;
+        public static float sv_maxspeed = ConfigManager.sv_maxspeed.Value; 
+        public static int sv_maxfrictionlessframes = ConfigManager.sv_maxfrictionlessframes.Value;
+        public static float sv_switchspeed = ConfigManager.sv_switchspeed.Value;
+        public static bool sv_acceltweak = ConfigManager.sv_acceltweak.Value;
         private void NewGroundMove()
         {
             // TODO: test out if implementing the quake ground move would work better, along with its friction too
@@ -85,7 +86,7 @@ namespace UltraStrafe
 
             float speed = new Vector2(__instance.rb.velocity.x , __instance.rb.velocity.z).magnitude;
             
-            if (speed > Plugin.sv_switchspeed.Value)
+            if (speed > sv_switchspeed)
             {
                 // quake air move
                 Vector3 wishvel = new(
@@ -109,7 +110,7 @@ namespace UltraStrafe
                 if (addspeed <= 0)
                     return;
 
-                accelspeed = Time.deltaTime * wishspeed * (Plugin.sv_acceltweak.Value ? NewAcceleration(speed): sv_accelerate) ;
+                accelspeed = Time.deltaTime * wishspeed * (sv_acceltweak? NewAcceleration(speed): sv_accelerate) ;
                 if (accelspeed > addspeed)
                     accelspeed = addspeed;
 

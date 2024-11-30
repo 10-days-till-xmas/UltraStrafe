@@ -31,7 +31,7 @@ namespace UltraStrafe
                     clingFadeRef(__instance) = 0f;
                     __instance.rocketRides = 0;
                 }
-                jumpBuffer = Plugin.sv_autobhop.Value? true : false;
+                jumpBuffer = ConfigManager.sv_autobhop.Value? true : false;
                 __instance.Jump();
             }
         }
