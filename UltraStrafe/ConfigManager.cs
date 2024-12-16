@@ -37,8 +37,8 @@ namespace UltraStrafe
             sv_maxspeed = Config.Bind(
                 "Cvars",
                 "sv_maxspeed",
-                320000f,
-                "The maximum speed value for the strafe movement.");
+                0f,
+                "The maximum speed value for the strafe movement. Set to 0 for no maximum");
             sv_jumppower = Config.Bind(
                 "Cvars",
                 "sv_jumppower",
