@@ -1,9 +1,7 @@
 ﻿using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using HarmonyLib.Tools;
-using System;
 
 namespace UltraStrafe;
 

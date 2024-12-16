@@ -15,7 +15,8 @@ namespace UltraStrafe
             { "sv_maxfrictionlessframes", sv_maxfrictionlessframes},
             { "sv_acceltweak", sv_acceltweak},
             { "sv_switchspeed", sv_switchspeed},
-            { "sv_autobhop", sv_autobhop}
+            { "sv_autobhop", sv_autobhop},
+            { "sv_jumppower", sv_jumppower}
         };
 
         internal static ConfigEntry<float> sv_accelerate;
@@ -24,6 +25,7 @@ namespace UltraStrafe
         internal static ConfigEntry<bool> sv_acceltweak;
         internal static ConfigEntry<float> sv_switchspeed;
         internal static ConfigEntry<bool> sv_autobhop;
+        internal static ConfigEntry<float> sv_jumppower;
 
         public void Reload()
         {
@@ -31,12 +33,17 @@ namespace UltraStrafe
                 "Cvars",
                 "sv_accelerate",
                 70f, // TODO: try finding the best value for this
-                "The (base) acceleration value for the strafe movement, affecting the turn radius");
+                "The (base) acceleration value for the strafe movement, affecting the turn radius.");
             sv_maxspeed = Config.Bind(
                 "Cvars",
                 "sv_maxspeed",
                 320000f,
-                "The maximum speed value for the strafe movement");
+                "The maximum speed value for the strafe movement.");
+            sv_jumppower = Config.Bind(
+                "Cvars",
+                "sv_jumppower",
+                90f,
+                "The jump power for jumping (note that this affects all jumps, not just bhops.");
             sv_maxfrictionlessframes = Config.Bind<Byte>(
                 "Cvars",
                 "sv_maxfrictionlessframes",
@@ -59,37 +66,5 @@ namespace UltraStrafe
                 "Enable this to make the game automatically jump while holding jump, without any need to release the jump key");
         }
 
-
-        public bool Set<T>(string key, T value)
-        {
-            if (typeof(T) != Cvars[key].GetType()) return false;
-            {
-                Plugin.Logger.LogError($"Failed to set cvar {key} to {value}: type mismatch");
-                return false;
-            }
-            try
-            {
-                Cvars[key] = value;
-                return true;
-            }
-            catch (Exception e)
-            {
-                Plugin.Logger.LogError($"Failed to set cvar {key} to {value}: {e}");
-                return false;
-            }
-        }
-        public bool Get<T>(string key)
-        {
-            try
-            {
-                Plugin.Logger.LogInfo($"{key} = {Cvars[key]}");
-                return true;
-            }
-            catch (Exception e)
-            {
-                Plugin.Logger.LogError($"Failed to get cvar {key}: {e}");
-                return false;
-            }
-        }
     }
 }

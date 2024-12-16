@@ -22,5 +22,13 @@ namespace UltraStrafe
             JumpBuffer.JumpBufferCheck(__instance);
             return true;
         }
+
+        [HarmonyPatch(typeof(NewMovement), "Jump")]
+        [HarmonyPrefix]
+        static bool JumpPrefix(NewMovement __instance)
+        {
+            __instance.jumpPower = ConfigManager.sv_jumppower.Value;
+            return true;
+        }
     }
 }
