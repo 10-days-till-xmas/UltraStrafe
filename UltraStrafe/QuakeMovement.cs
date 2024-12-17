@@ -96,7 +96,7 @@ namespace UltraStrafe
 
                 wishspeed = wishvel.magnitude;
 
-                if (wishspeed > sv_maxspeed)
+                if (wishspeed > sv_maxspeed && sv_maxspeed != 0)
                 {
                     wishvel *= sv_maxspeed / wishspeed;
                     wishspeed = sv_maxspeed;
