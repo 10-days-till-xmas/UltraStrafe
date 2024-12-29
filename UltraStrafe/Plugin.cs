@@ -16,7 +16,7 @@ public class Plugin : BaseUnityPlugin
         // Plugin startup logic
         Logger = base.Logger;
         Logger.LogInfo($"Plugin {UltraStrafePluginInfo.PLUGIN_NAME} is loaded! :3");
-        ConfigManager = new ConfigManager();
+        ConfigManager = new ConfigManager(Config);
         ConfigManager.Reload();
         DoPatching();
     }

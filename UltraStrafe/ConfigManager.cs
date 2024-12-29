@@ -5,9 +5,9 @@ using BepInEx.Configuration;
 
 namespace UltraStrafe
 {
-    [BepInPlugin(UltraStrafePluginInfo.PLUGIN_GUID, UltraStrafePluginInfo.PLUGIN_NAME, UltraStrafePluginInfo.PLUGIN_VERSION)]
-    internal class ConfigManager : BaseUnityPlugin
+    internal class ConfigManager(ConfigFile config)
     {
+        internal ConfigFile Config = config;
         public Dictionary<string, object> Cvars = new()
         {
             { "sv_accelerate", sv_accelerate},
