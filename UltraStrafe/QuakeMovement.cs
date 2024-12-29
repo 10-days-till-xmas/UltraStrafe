@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using HarmonyLib;
+﻿using HarmonyLib;
+using UnityEngine;
 
 namespace UltraStrafe
 {
@@ -25,7 +25,7 @@ namespace UltraStrafe
             AccessTools.FieldRefAccess<NewMovement, float>("friction");
 
         public static float sv_accelerate = ConfigManager.sv_accelerate.Value;
-        public static float sv_maxspeed = ConfigManager.sv_maxspeed.Value; 
+        public static float sv_maxspeed = ConfigManager.sv_maxspeed.Value;
         public static int sv_maxfrictionlessframes = ConfigManager.sv_maxfrictionlessframes.Value;
         public static float sv_switchspeed = ConfigManager.sv_switchspeed.Value;
         public static bool sv_acceltweak = ConfigManager.sv_acceltweak.Value;
@@ -63,10 +63,10 @@ namespace UltraStrafe
 
                 vector += vector2;
             }
-            
+
             __instance.rb.velocity = Vector3.Lerp(
-                __instance.rb.velocity, 
-                movementDirection2Ref(__instance) + vector, 
+                __instance.rb.velocity,
+                movementDirection2Ref(__instance) + vector,
                 0.25f * frictionRef(__instance)
                 );
 
@@ -76,7 +76,7 @@ namespace UltraStrafe
         private float NewAcceleration(float speed)
         {
             // TODO: try changing the parameters of this function to get the best result
-            float factor = Mathf.Clamp(Mathf.Log(speed-8.5f, 2f) - 2f, 1f, 10f);
+            float factor = Mathf.Clamp(Mathf.Log(speed - 8.5f, 2f) - 2f, 1f, 10f);
             return sv_accelerate * factor;
         }
 
@@ -84,8 +84,8 @@ namespace UltraStrafe
         {
             __instance.rb.useGravity = true;
 
-            float speed = new Vector2(__instance.rb.velocity.x , __instance.rb.velocity.z).magnitude;
-            
+            float speed = new Vector2(__instance.rb.velocity.x, __instance.rb.velocity.z).magnitude;
+
             if (speed > sv_switchspeed)
             {
                 // quake air move
@@ -110,7 +110,7 @@ namespace UltraStrafe
                 if (addspeed <= 0)
                     return;
 
-                accelspeed = Time.deltaTime * wishspeed * (sv_acceltweak? NewAcceleration(speed): sv_accelerate) ;
+                accelspeed = Time.deltaTime * wishspeed * (sv_acceltweak ? NewAcceleration(speed) : sv_accelerate);
                 if (accelspeed > addspeed)
                     accelspeed = addspeed;
 
@@ -130,7 +130,7 @@ namespace UltraStrafe
 
                 airDirectionRef(__instance).y = 0f; // the force to be applied to the movement vector
 
-                if (__instance.rb.velocity.x * movementDirection2Ref(__instance).x < Mathf.Pow(movementDirection2Ref(__instance).x,2))
+                if (__instance.rb.velocity.x * movementDirection2Ref(__instance).x < Mathf.Pow(movementDirection2Ref(__instance).x, 2))
                 {
                     airDirectionRef(__instance).x = movementDirection2Ref(__instance).x;
                 }
@@ -147,7 +147,7 @@ namespace UltraStrafe
                 {
                     airDirectionRef(__instance).z = 0f;
                 }
-                __instance.rb.AddForce(airDirectionRef(__instance).normalized * __instance.airAcceleration); 
+                __instance.rb.AddForce(airDirectionRef(__instance).normalized * __instance.airAcceleration);
             }
         }
 

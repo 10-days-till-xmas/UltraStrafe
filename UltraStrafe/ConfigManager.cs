@@ -1,7 +1,6 @@
-﻿using System;
+﻿using BepInEx.Configuration;
+using System;
 using System.Collections.Generic;
-using BepInEx;
-using BepInEx.Configuration;
 
 namespace UltraStrafe
 {
