@@ -10,8 +10,7 @@ namespace UltraStrafe
         [HarmonyPrefix]
         static bool MovePrefix(NewMovement __instance)
         {
-            QuakeMovement QuakeMovement = new(__instance);
-            QuakeMovement.NewMove();
+        QuakeMovement.NewMove(__instance);
             return false;
         }
 
