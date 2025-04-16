@@ -13,8 +13,8 @@ namespace UltraStrafe
         // Field References
         private static readonly AccessTools.FieldRef<NewMovement, bool> slideEndingRef =
             AccessTools.FieldRefAccess<NewMovement, bool>("slideEnding");
-        private static readonly AccessTools.FieldRef<NewMovement, bool> hurtingRef =
-            AccessTools.FieldRefAccess<NewMovement, bool>("hurting");
+    private static readonly AccessTools.FieldRef<NewMovement, float> hurtInvincibilityRef =
+        AccessTools.FieldRefAccess<NewMovement, float>("hurtInvincibility");
         private static readonly AccessTools.FieldRef<NewMovement, Vector3> movementDirectionRef =
             AccessTools.FieldRefAccess<NewMovement, Vector3>("movementDirection");
         private static readonly AccessTools.FieldRef<NewMovement, Vector3> movementDirection2Ref =
@@ -154,7 +154,7 @@ namespace UltraStrafe
         public void NewMove()
         {
             slideEndingRef(__instance) = false;
-            if (!hurtingRef(__instance) && !__instance.levelOver)
+        if (hurtInvincibilityRef(__instance) <= 0f && !__instance.levelOver)
             {
                 __instance.gameObject.layer = 2;
                 __instance.exploded = false;

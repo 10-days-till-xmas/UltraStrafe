@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>UltraStrafe</AssemblyName>
     <Product>UltraStrafe</Product>
-    <Version>1.1.1</Version>
+    <Version>1.2.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -24,23 +24,32 @@
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="HarmonyX" Version="2.13.0" />
-	<PackageReference Include="UnityEngine.Modules" Version="2019.4.40" IncludeAssets="compile" />
+	  <PackageReference Include="UnityEngine.Modules" Version="2022.3.29" IncludeAssets="compile" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <UltrakillDir>C:\Users\10_days_till_xmas\Documents\coding\C#\UltraModding\_testing\patch_16d</UltrakillDir>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\ultrakill+bepinex\ULTRAKILL_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(UltrakillDir)\ULTRAKILL_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\UltraStrafe\ultrakill+bepinex\ULTRAKILL_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(UltrakillDir)\ULTRAKILL_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
 
 	<ItemGroup>
 		<Publicize Include="Assembly-CSharp" />
 	</ItemGroup>
+
+  <Target Name="CopyBuildOutput" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
+    <Message Importance="normal" Text="Copying to the ultrakill directory for debugging from $(TargetPath)" />
+    <Exec Command="xcopy /Y /I &quot;$(TargetPath)&quot; &quot;$(UltrakillDir)\BepInEx\plugins&quot;" />
+  </Target>
 </Project>
