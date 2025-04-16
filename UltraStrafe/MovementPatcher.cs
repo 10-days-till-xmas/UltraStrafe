@@ -1,33 +1,30 @@
 ﻿using HarmonyLib;
 
-namespace UltraStrafe
+namespace UltraStrafe;
+
+[HarmonyPatch(typeof(NewMovement))]
+public class MovementPatcher
 {
-    [HarmonyPatch(typeof(NewMovement))]
-    public class MovementPatcher
+
+    [HarmonyPatch( "Move")]
+    [HarmonyPrefix]
+    private static bool MovePrefix(NewMovement __instance)
     {
-
-        [HarmonyPatch(typeof(NewMovement), "Move")]
-        [HarmonyPrefix]
-        static bool MovePrefix(NewMovement __instance)
-        {
         QuakeMovement.NewMove(__instance);
-            return false;
-        }
+        return false;
+    }
 
-        [HarmonyPatch(typeof(NewMovement), "Update")]
-        [HarmonyPrefix]
-        static bool UpdatePrefix(NewMovement __instance)
-        {
-            JumpBuffer.JumpBufferCheck(__instance);
-            return true;
-        }
+    [HarmonyPrefix]
+    [HarmonyPatch("Update")]
+    private static void UpdatePrefix(NewMovement __instance)
+    {
+        JumpBuffer.JumpBufferCheck(__instance);
+    }
 
-        [HarmonyPatch(typeof(NewMovement), "Jump")]
-        [HarmonyPrefix]
-        static bool JumpPrefix(NewMovement __instance)
-        {
-            __instance.jumpPower = ConfigManager.sv_jumppower.Value;
-            return true;
-        }
+    [HarmonyPrefix]
+    [HarmonyPatch("Jump")]
+    private static void JumpPrefix(NewMovement __instance)
+    {
+        __instance.jumpPower = ConfigManager.sv_jumppower.Value;
     }
 }

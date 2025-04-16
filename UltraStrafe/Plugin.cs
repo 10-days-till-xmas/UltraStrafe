@@ -21,7 +21,7 @@ public class Plugin : BaseUnityPlugin
         DoPatching();
     }
 
-    private void DoPatching()
+    private static void DoPatching()
     {
         var harmony = new Harmony(UltraStrafePluginInfo.PLUGIN_GUID);
         HarmonyFileLog.Enabled = true;
@@ -32,7 +32,7 @@ public class Plugin : BaseUnityPlugin
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameStateManager), "CanSubmitScores", MethodType.Getter)]
-    static void ScoresSubmission(ref bool __result)
+    private static void ScoresSubmission(ref bool __result)
     {
         // prevent scores from being submitted since this mod is technically a cheat
         __result = false;
