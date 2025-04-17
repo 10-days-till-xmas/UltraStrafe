@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
-using System.Reflection.Emit;
-
 using static UltraStrafe.Plugin;
+
 namespace UltraStrafe;
 
 internal static class QuakeMovement
@@ -143,12 +143,10 @@ internal static class QuakeMovement
                 new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "gc")),
                 new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(GroundCheck), "onGround")),
                 new CodeMatch(OpCodes.Brfalse),
-
                 new CodeMatch(OpCodes.Ldarg_0),
                 new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "friction")),
                 new CodeMatch(OpCodes.Ldc_R4, 0f),
                 new CodeMatch(OpCodes.Ble_Un),
-
                 new CodeMatch(OpCodes.Ldarg_0),
                 new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "jumping")),
                 new CodeMatch(OpCodes.Brtrue)
@@ -156,7 +154,6 @@ internal static class QuakeMovement
             .ThrowIfInvalid("Could not find `if (gc.onGround && friction > 0f && !jumping)`")
             .Advance(1)
             .CreateLabel(out var groundMoveLabel)
-
             .Insert( // if (frictionlessFrames > 0) then decrement it and return
                 new CodeInstruction(OpCodes.Ldsfld, frictionlessFramesField),
                 new CodeInstruction(OpCodes.Ldc_I4_0),
