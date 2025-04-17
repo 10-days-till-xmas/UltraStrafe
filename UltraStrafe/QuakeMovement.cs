@@ -1,6 +1,11 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
+using System.Reflection.Emit;
 
+using static UltraStrafe.Plugin;
 namespace UltraStrafe;
 
 internal static class QuakeMovement
@@ -9,67 +14,18 @@ internal static class QuakeMovement
     private static int frictionlessFrames = 0;
 
     // Field References
-    private static readonly AccessTools.FieldRef<NewMovement, bool> slideEndingRef =
-        AccessTools.FieldRefAccess<NewMovement, bool>("slideEnding");
-    private static readonly AccessTools.FieldRef<NewMovement, float> hurtInvincibilityRef =
-        AccessTools.FieldRefAccess<NewMovement, float>("hurtInvincibility");
     private static readonly AccessTools.FieldRef<NewMovement, Vector3> movementDirectionRef =
         AccessTools.FieldRefAccess<NewMovement, Vector3>("movementDirection");
     private static readonly AccessTools.FieldRef<NewMovement, Vector3> movementDirection2Ref =
         AccessTools.FieldRefAccess<NewMovement, Vector3>("movementDirection2");
     private static readonly AccessTools.FieldRef<NewMovement, Vector3> airDirectionRef =
         AccessTools.FieldRefAccess<NewMovement, Vector3>("airDirection");
-    private static readonly AccessTools.FieldRef<NewMovement, float> frictionRef =
-        AccessTools.FieldRefAccess<NewMovement, float>("friction");
 
-    public static float sv_accelerate = ConfigManager.sv_accelerate.Value;
-    public static float sv_maxspeed = ConfigManager.sv_maxspeed.Value;
-    public static int sv_maxfrictionlessframes = ConfigManager.sv_maxfrictionlessframes.Value;
-    public static float sv_switchspeed = ConfigManager.sv_switchspeed.Value;
-    public static bool sv_acceltweak = ConfigManager.sv_acceltweak.Value;
-    private static void NewGroundMove(NewMovement __instance)
-    {
-        // note: this is the same as the original ground move. Try removing this and use a transpiler instead
-        // TODO: test out if implementing the quake ground move would work better, along with its friction too
-        float y = __instance.rb.velocity.y;
-        if (__instance.slopeCheck.onGround && movementDirectionRef(__instance).x == 0f && movementDirectionRef(__instance).z == 0f)
-        {
-            y = 0f;
-            __instance.rb.useGravity = false;
-        }
-        else
-        {
-            __instance.rb.useGravity = true;
-        }
-
-        float slowModeNum = __instance.slowMode ? 1.25f : 2.75f;
-
-        if ((bool)__instance.groundProperties)
-        {
-            slowModeNum *= __instance.groundProperties.speedMultiplier;
-        }
-        float speedScale = __instance.walkSpeed * Time.deltaTime * slowModeNum;
-        
-        movementDirection2Ref(__instance) = new Vector3(movementDirectionRef(__instance).x * speedScale, y, movementDirectionRef(__instance).z * speedScale);
-        Vector3 vector = __instance.pushForce;
-        if ((bool)__instance.groundProperties && __instance.groundProperties.push)
-        {
-            Vector3 vector2 = __instance.groundProperties.pushForce;
-            if (__instance.groundProperties.pushDirectionRelative)
-            {
-                vector2 = __instance.groundProperties.transform.rotation * vector2;
-            }
-
-            vector += vector2;
-        }
-
-        __instance.rb.velocity = Vector3.Lerp(
-            __instance.rb.velocity,
-            movementDirection2Ref(__instance) + vector,
-            0.25f * frictionRef(__instance)
-        );
-
-    }
+    public static float sv_accelerate => ConfigManager.sv_accelerate.Value;
+    public static float sv_maxspeed => ConfigManager.sv_maxspeed.Value;
+    public static int sv_maxfrictionlessframes => ConfigManager.sv_maxfrictionlessframes.Value;
+    public static float sv_switchspeed => ConfigManager.sv_switchspeed.Value;
+    public static bool sv_acceltweak => ConfigManager.sv_acceltweak.Value;
 
     private static float NewAcceleration(float speed)
     {
@@ -113,79 +69,148 @@ internal static class QuakeMovement
     {
         __instance.rb.useGravity = true;
 
+        if (QuakeAirMoveInjection(__instance)) return;
+
+        DefaultUltrakillAirMove(__instance);
+    }
+
+    private static bool QuakeAirMoveInjection(NewMovement __instance)
+    {
         var speed = new Vector2(__instance.rb.velocity.x, __instance.rb.velocity.z).magnitude;
 
-        if (speed > sv_switchspeed)
+        if (!(speed > sv_switchspeed)) return false;
+        // quake air move
+        QuakeAirMove(__instance);
+        return true;
+    }
+
+    private static void DefaultUltrakillAirMove(NewMovement __instance)
+    {
+        // TODO: use transpilation so this block isn't needed
+
+        // default ultrakill air movement (cleaned up and commented for my better understanding)
+        float slowModeNum = __instance.slowMode ? 1.25f : 2.75f;
+        // movementDirection is raw player input, normalised to 1
+        movementDirection2Ref(__instance) = new Vector3(
+            movementDirectionRef(__instance).x * __instance.walkSpeed * Time.deltaTime * slowModeNum,
+            __instance.rb.velocity.y,
+            movementDirectionRef(__instance).z * __instance.walkSpeed * Time.deltaTime * slowModeNum);
+
+        //movementDirection2 is the actual movement vector, with the y component being the same as the rb velocity
+
+        airDirectionRef(__instance).y = 0f; // the force to be applied to the movement vector
+
+        if (__instance.rb.velocity.x * movementDirection2Ref(__instance).x < Mathf.Pow(movementDirection2Ref(__instance).x, 2))
         {
-            // quake air move
-            QuakeAirMove(__instance);
+            airDirectionRef(__instance).x = movementDirection2Ref(__instance).x;
         }
         else
         {
-            // TODO: use transpilation so this block isnt needed
-            
-            // default ultrakill air movement (cleaned up and commented for my better understanding)
-            float slowModeNum = __instance.slowMode ? 1.25f : 2.75f;
-            // movementDirection is raw player input, normalised to 1
-            movementDirection2Ref(__instance) = new Vector3(
-                movementDirectionRef(__instance).x * __instance.walkSpeed * Time.deltaTime * slowModeNum,
-                __instance.rb.velocity.y,
-                movementDirectionRef(__instance).z * __instance.walkSpeed * Time.deltaTime * slowModeNum);
-
-            //movementDirection2 is the actual movement vector, with the y component being the same as the rb velocity
-
-            airDirectionRef(__instance).y = 0f; // the force to be applied to the movement vector
-
-            if (__instance.rb.velocity.x * movementDirection2Ref(__instance).x < Mathf.Pow(movementDirection2Ref(__instance).x, 2))
-            {
-                airDirectionRef(__instance).x = movementDirection2Ref(__instance).x;
-            }
-            else
-            {
-                airDirectionRef(__instance).x = 0f;
-            }
-
-            if (__instance.rb.velocity.z * movementDirection2Ref(__instance).z < Mathf.Pow(movementDirection2Ref(__instance).z, 2))
-            {
-                airDirectionRef(__instance).z = movementDirection2Ref(__instance).z;
-            }
-            else
-            {
-                airDirectionRef(__instance).z = 0f;
-            }
-            __instance.rb.AddForce(airDirectionRef(__instance).normalized * __instance.airAcceleration);
+            airDirectionRef(__instance).x = 0f;
         }
+
+        if (__instance.rb.velocity.z * movementDirection2Ref(__instance).z < Mathf.Pow(movementDirection2Ref(__instance).z, 2))
+        {
+            airDirectionRef(__instance).z = movementDirection2Ref(__instance).z;
+        }
+        else
+        {
+            airDirectionRef(__instance).z = 0f;
+        }
+        __instance.rb.AddForce(airDirectionRef(__instance).normalized * __instance.airAcceleration);
     }
 
-    public static void NewMove(NewMovement __instance)
+    public static IEnumerable<CodeInstruction> MoveTranspiler(
+        IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
     {
-        slideEndingRef(__instance) = false;
-        if (hurtInvincibilityRef(__instance) <= 0f && !__instance.levelOver)
-        {
-            __instance.gameObject.layer = 2;
-            __instance.exploded = false;
-        }
+        var codeMatcher = new CodeMatcher(instructions, ilGenerator);
+         var frictionlessFramesField = AccessTools.Field(typeof(QuakeMovement), nameof(frictionlessFrames));
 
-        if (__instance.gc.onGround && !__instance.jumping)
-        {
-            __instance.currentWallJumps = 0;
-            __instance.rocketJumps = 0;
-            __instance.hammerJumps = 0;
-            __instance.rocketRides = 0;
-        }
+        TranspileAirMovement(ref codeMatcher, frictionlessFramesField);
+        Log("hell yea");
+        TranspileGroundMovement(ref codeMatcher, frictionlessFramesField);
 
-        //ground friction and acceleration
-        if (__instance.gc.onGround && frictionRef(__instance) > 0f && !__instance.jumping)
-        {
-            if (frictionlessFrames == 0)
-                NewGroundMove(__instance);
-            else
-                frictionlessFrames--;
-        }
-        else // air acceleration
-        {
-            NewAirMove(__instance);
-            frictionlessFrames = sv_maxfrictionlessframes;
-        }
+        return codeMatcher.InstructionEnumeration();
+    }
+
+    private static void TranspileAirMovement(ref CodeMatcher codeMatcher, FieldInfo frictionlessFramesField)
+    {
+        /* // rb.useGravity = true;
+         * IL_01e8: ret
+         * IL_01e9: ldarg.0
+         * IL_01ea: ldfld class [UnityEngine.PhysicsModule]UnityEngine.Rigidbody NewMovement::rb
+         * IL_01ef: ldc.i4.1
+         * IL_01f0: callvirt instance void [UnityEngine.PhysicsModule]UnityEngine.Rigidbody::set_useGravity(bool)
+         */
+        codeMatcher
+            .MatchForward(true,
+                new CodeMatch(OpCodes.Ret),
+                new CodeMatch(OpCodes.Ldarg_0),
+                new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "rb")),
+                new CodeMatch(OpCodes.Ldc_I4_1),
+                new CodeMatch(OpCodes.Callvirt, AccessTools.PropertySetter(typeof(Rigidbody), "useGravity"))
+            )
+            .ThrowIfInvalid("Couldn't find `rb.useGravity = true`")
+            .Advance(1)
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldarg_0) /*{ labels = codeMatcher.Labels }*/,
+                new CodeInstruction(OpCodes.Call, ((Delegate)NewAirMove).Method),
+                new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(QuakeMovement), nameof(sv_maxfrictionlessframes))),
+                new CodeInstruction(OpCodes.Stsfld, frictionlessFramesField),
+                new CodeInstruction(OpCodes.Ret)
+            )
+            .RemoveInstructions(codeMatcher.Remaining);
+    }
+
+    private static void TranspileGroundMovement(ref CodeMatcher codeMatcher, FieldInfo frictionlessFramesField)
+    {
+
+        /* // if (gc.onGround && friction > 0f && !jumping)
+         * IL_0060: ldarg.0
+         * IL_0061: ldfld class GroundCheck NewMovement::gc
+         * IL_0066: ldfld bool GroundCheck::onGround
+         * IL_006b: brfalse IL_01e9
+         *
+         * IL_0070: ldarg.0
+         * IL_0071: ldfld float32 NewMovement::friction
+         * IL_0076: ldc.r4 0.0
+         * IL_007b: ble.un IL_01e9
+         *
+         * IL_0080: ldarg.0
+         * IL_0081: ldfld bool NewMovement::jumping
+         * IL_0086: brtrue IL_01e9
+         */
+        codeMatcher
+            .Start()
+            .MatchForward(true,
+                new CodeMatch(OpCodes.Ldarg_0),
+                new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "gc")),
+                new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(GroundCheck), "onGround")),
+                new CodeMatch(OpCodes.Brfalse),
+
+                new CodeMatch(OpCodes.Ldarg_0),
+                new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "friction")),
+                new CodeMatch(OpCodes.Ldc_R4, 0f),
+                new CodeMatch(OpCodes.Ble_Un),
+
+                new CodeMatch(OpCodes.Ldarg_0),
+                new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(NewMovement), "jumping")),
+                new CodeMatch(OpCodes.Brtrue)
+            )
+            .ThrowIfInvalid("Could not find `if (gc.onGround && friction > 0f && !jumping)`")
+            .Advance(1)
+            .CreateLabel(out var groundMoveLabel)
+
+            .Insert( // if (frictionlessFrames > 0) then decrement it and return
+                new CodeInstruction(OpCodes.Ldsfld, frictionlessFramesField),
+                new CodeInstruction(OpCodes.Ldc_I4_0),
+                new CodeInstruction(OpCodes.Cgt_Un),
+                new CodeInstruction(OpCodes.Brfalse_S, groundMoveLabel),
+                new CodeInstruction(OpCodes.Ldsfld, frictionlessFramesField),
+                new CodeInstruction(OpCodes.Ldc_I4_1),
+                new CodeInstruction(OpCodes.Sub),
+                new CodeInstruction(OpCodes.Stsfld, frictionlessFramesField),
+                new CodeInstruction(OpCodes.Ret)
+            );
     }
 }

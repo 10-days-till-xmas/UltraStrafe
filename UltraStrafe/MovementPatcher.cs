@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using HarmonyLib;
 
 namespace UltraStrafe;
 
@@ -6,13 +9,14 @@ namespace UltraStrafe;
 public class MovementPatcher
 {
 
-    [HarmonyPatch( "Move")]
-    [HarmonyPrefix]
-    private static bool MovePrefix(NewMovement __instance)
+    [HarmonyTranspiler]
+    [HarmonyPatch("Move")]
+    private static IEnumerable<CodeInstruction> MoveTranspiler(IEnumerable<CodeInstruction> instructions, 
+        ILGenerator generator)
     {
-        QuakeMovement.NewMove(__instance);
-        return false;
+        return QuakeMovement.MoveTranspiler(instructions, generator);
     }
+    
 
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
