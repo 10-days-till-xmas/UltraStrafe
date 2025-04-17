@@ -38,4 +38,9 @@ public class Plugin : BaseUnityPlugin
         __result = false;
         // remove if using for a level plugin
     }
+
+    public static void Log(string message)
+    {
+        Logger.LogInfo(message);
+    }
 }
